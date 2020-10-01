@@ -1,0 +1,20 @@
+{
+  "name": "ken-kitano-bot",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/matheus2x/ken-kitano-bot.git",
+  "author": "matheus2x <matheushenriqueplus99@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "puppeteer": "^5.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
