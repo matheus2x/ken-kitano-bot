@@ -3,8 +3,9 @@ const { Client } = require("discord.js");
 
 const { 
   searchManga,
-  searchMangaTags 
-} = require("./functions");
+  searchMangaTags,
+  showMangaTags,
+} = require("./commands");
 
 const bot = new Client();
 
@@ -21,6 +22,12 @@ bot.on("message", async(msg) => {
 bot.on("message", async(msg) => {
   if (msg.content === "gibi search tags") {
     await searchMangaTags(msg);
+  }
+})
+
+bot.on("message", async(msg) => {
+  if (msg.content === "gibi tags") {
+    await showMangaTags(msg);
   }
 })
 
