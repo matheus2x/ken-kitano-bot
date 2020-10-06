@@ -51,7 +51,6 @@ async function searchManga(msg) {
   });
 
   msg.reply("toma aqui seu gibi:");
-  console.log("toma aqui seu gibi:");
 
   const embedManga = new MessageEmbed()
     .setTitle(manga.title)
