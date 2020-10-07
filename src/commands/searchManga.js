@@ -2,7 +2,9 @@ const { MessageEmbed } = require("discord.js");
 const puppeteer = require("puppeteer");
 const randomNum = require("../utils/calculateRandomNumber");
 
-async function searchManga(msg) {
+async function searchManga(msg, { url }) {
+
+  try {
   msg.reply("já mando pera aí.");
 
   const browser = await puppeteer.launch({
@@ -12,7 +14,21 @@ async function searchManga(msg) {
 
   const page = await browser.newPage();
   await page.setViewport({ width: 0, height: 0 });
-  await page.goto(`https://unionmangas.top/lista-mangas/ecchi/${randomNum(1, 33)}`, {
+
+  await page.goto(url, {
+    waitUntil: "networkidle0",
+    timeout: 60000,
+  });
+
+  const lastPageNum = await page.evaluate(() => {
+    const pageList = document.querySelectorAll("ul.pagination li");
+    const lastPageUrl = pageList[pageList.length - 1].firstElementChild.href;
+    const lastPageNum = lastPageUrl.match(/\d/g).join("");
+
+    return lastPageNum;
+  })
+
+  await page.goto(`${url}/${randomNum(1, lastPageNum)}`, {
     waitUntil: "networkidle0",
     timeout: 60000,
   });
@@ -25,7 +41,7 @@ async function searchManga(msg) {
     }
 
     const nodeList = document.querySelectorAll("img.img-thumbnail");
-    const mangaInterval = calculateRandomFromInterval(0, 39);
+    const mangaInterval = calculateRandomFromInterval(0, nodeList.length - 1);
     const randomManga = nodeList[mangaInterval];
     const randomMangaModel = randomManga.closest("a").href;
 
@@ -46,23 +62,29 @@ async function searchManga(msg) {
       description: document.querySelector("div.panel-body").innerText,
       image: document.querySelector("img.img-thumbnail").src,
     };
-
     return manga;
   });
 
-  msg.reply("toma aqui seu gibi:");
-
+  await msg.reply("toma aqui seu gibi:");
+  
   const embedManga = new MessageEmbed()
-    .setTitle(manga.title)
-    .setDescription(manga.description)
-    .setImage(manga.image)
-    .setColor(0xff0000);
-
-  msg.channel.send({ embed: embedManga });
+  .setTitle(manga.title)
+  .setDescription(manga.description)
+  .setImage(manga.image)
+  .setColor(0xff0000);
+  
+  await msg.channel.send({ embed: embedManga });
 
   await page.close();
 
   return console.log("gibi enviado!");
+  
+} catch (err) {
+  if(err) {
+    msg.reply("algo inesperado aconteceu. Tente novamente.")
+    throw new Error("Algo de errado aconteceu.")
+  }
+  }
 }
 
 module.exports = searchManga;
